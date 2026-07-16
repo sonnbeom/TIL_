@@ -1,24 +1,32 @@
 package com.example.ojt_ui;
 
-import com.example.ojt_ui.data.MasterData;
-import com.example.ojt_ui.data.S02Data;
-import com.example.ojt_ui.data.S03Data;
-import com.example.ojt_ui.data.S04Data;
-import com.example.ojt_ui.model.AssetDetail;
-import com.example.ojt_ui.model.Criteria;
-import com.example.ojt_ui.model.Selection;
-import com.example.ojt_ui.model.Submodel;
-import com.example.ojt_ui.model.TreeNode;
+import com.example.ojt_ui.dto.S01Request;
+import com.example.ojt_ui.dto.S02Request;
+import com.example.ojt_ui.dto.S03Request;
+import com.example.ojt_ui.dto.S04Request;
+import com.example.ojt_ui.service.S01Service;
+import com.example.ojt_ui.service.S02Service;
+import com.example.ojt_ui.service.S03Service;
+import com.example.ojt_ui.service.S04Service;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Controller
 public class HomeController {
+
+    private final S01Service s01Service;
+    private final S02Service s02Service;
+    private final S03Service s03Service;
+    private final S04Service s04Service;
+
+    public HomeController(S01Service s01Service, S02Service s02Service, S03Service s03Service, S04Service s04Service) {
+        this.s01Service = s01Service;
+        this.s02Service = s02Service;
+        this.s03Service = s03Service;
+        this.s04Service = s04Service;
+    }
 
     @GetMapping("/test")
     public String home() {
@@ -26,85 +34,26 @@ public class HomeController {
     }
 
     @GetMapping("/s01")
-    public String s01(@RequestParam(defaultValue = "port") String group, Model model) {
-        model.addAttribute("groups", MasterData.ALL);
-        model.addAttribute("selectedKey", group);
-        model.addAttribute("selectedGroup", MasterData.ALL.get(group));
-        model.addAttribute("impactNote", MasterData.IMPACT_NOTES.get(group));
+    public String s01(@ModelAttribute S01Request request, Model model) {
+        model.addAllAttributes(s01Service.buildModel(request));
         return "s01";
     }
 
     @GetMapping("/s02")
-    public String s02(@RequestParam(defaultValue = "type_vessel") String node,
-                       @RequestParam(defaultValue = "fields") String tab,
-                       Model model) {
-        TreeNode selected = S02Data.TREE.get(node);
-
-        model.addAttribute("tree", S02Data.TREE);
-        model.addAttribute("groupOrder", S02Data.GROUP_ORDER);
-        model.addAttribute("icons", S02Data.ICONS);
-        model.addAttribute("submodelById", S02Data.SUBMODEL_BY_ID);
-        model.addAttribute("nodeCount", S02Data.TREE.size());
-        model.addAttribute("selectedKey", node);
-        model.addAttribute("selectedNode", selected);
-        model.addAttribute("tab", tab);
-
-        if (selected != null && selected.isType()) {
-            List<Submodel> available = S02Data.SUBMODEL_CATALOG.stream()
-                    .filter(s -> !selected.getSubmodels().contains(s.getId()))
-                    .collect(Collectors.toList());
-            model.addAttribute("availableSubmodels", available);
-        }
-
+    public String s02(@ModelAttribute S02Request request, Model model) {
+        model.addAllAttributes(s02Service.buildModel(request));
         return "s02";
     }
 
     @GetMapping("/s03")
-    public String s03(@RequestParam(defaultValue = "ClassificationSociety") String regulatoryBody,
-                       @RequestParam(required = false) String society,
-                       @RequestParam(defaultValue = "LEISURE") String vesselCategory,
-                       @RequestParam(defaultValue = "FRP") String hullMaterial,
-                       @RequestParam(defaultValue = "SMALL") String sizeClass,
-                       @RequestParam(defaultValue = "LEISURE_GUIDE") String applicableRule,
-                       @RequestParam(defaultValue = "mapping") String topTab,
-                       @RequestParam(defaultValue = "docs") String detailTab,
-                       Model model) {
-        if (society == null && "ClassificationSociety".equals(regulatoryBody)) {
-            society = "KR";
-        }
-        Selection current = new Selection(regulatoryBody, society, vesselCategory, hullMaterial, sizeClass, applicableRule);
-        Criteria criteria = S03Data.CRITERIA.get(current.toKey());
-
-        model.addAttribute("steps", S03Data.buildStepViews(current));
-        model.addAttribute("current", current);
-        model.addAttribute("criteria", criteria);
-        model.addAttribute("sourceRules", S03Data.SOURCE_RULES);
-        model.addAttribute("doctypes", S03Data.DOCTYPES);
-        model.addAttribute("matrix", S03Data.buildMatrixView());
-        model.addAttribute("topTab", topTab);
-        model.addAttribute("detailTab", detailTab);
-
-        if (criteria != null && "vessels".equals(detailTab)) {
-            model.addAttribute("vesselRows", S03Data.buildVesselRows(criteria));
-        }
-
-        if ("master".equals(topTab)) {
-            model.addAttribute("doctypeMasterRows", S03Data.buildDoctypeMasterRows());
-            model.addAttribute("masterCount", S03Data.DOCTYPES.size());
-        }
-
+    public String s03(@ModelAttribute S03Request request, Model model) {
+        model.addAllAttributes(s03Service.buildModel(request));
         return "s03";
     }
 
     @GetMapping("/s04")
-    public String s04(@RequestParam(defaultValue = "welder3") String node, Model model) {
-        AssetDetail detail = S04Data.DETAILS.get(node);
-
-        model.addAttribute("tree", S04Data.TREE);
-        model.addAttribute("icons", S04Data.ICONS);
-        model.addAttribute("selectedKey", node);
-        model.addAttribute("detail", detail);
-
+    public String s04(@ModelAttribute S04Request request, Model model) {
+        model.addAllAttributes(s04Service.buildModel(request));
         return "s04";
     }
 
