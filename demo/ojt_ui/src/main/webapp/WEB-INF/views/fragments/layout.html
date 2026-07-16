@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav class="sidebar" th:fragment="sidebar(active)">
+    <div class="brand">
+        <div class="name">DK엠텍 AAS</div>
+        <div class="sub">제조 디지털트윈 · 자산관리</div>
+    </div>
+    <div class="nav-group-label">자산관리</div>
+    <a class="nav-item" th:classappend="${active == 's01'} ? 'active' : ''" th:href="@{/s01}"><span class="code">S01</span> 자산 기준정보 관리</a>
+    <a class="nav-item" th:classappend="${active == 's02'} ? 'active' : ''" th:href="@{/s02}"><span class="code">S02</span> AAS 템플릿 관리</a>
+    <a class="nav-item" th:classappend="${active == 's03'} ? 'active' : ''" th:href="@{/s03}"><span class="code">S03</span> 선급 검사기준 관리</a>
+    <a class="nav-item" th:classappend="${active == 's04'} ? 'active' : ''" href="s04.html"><span class="code">S04</span> 자산 분류 탐색</a>
+    <a class="nav-item" th:classappend="${active == 's05'} ? 'active' : ''" href="s05.html"><span class="code">S05</span> 자산 검색</a>
+    <a class="nav-item" th:classappend="${active == 's06'} ? 'active' : ''" href="s06.html"><span class="code">S06</span> 자산 등록·수정</a>
+    <a class="nav-item" th:classappend="${active == 's07'} ? 'active' : ''" href="s07.html"><span class="code">S07</span> 자산 상세조회</a>
+    <a class="nav-item" th:classappend="${active == 's08'} ? 'active' : ''" href="s08.html"><span class="code">S08</span> 제조자원 자산 관리</a>
+    <a class="nav-item" th:classappend="${active == 's09'} ? 'active' : ''" href="s09.html"><span class="code">S09</span> 기자재 자산 관리</a>
+    <div class="nav-group-label">문서관리</div>
+    <a class="nav-item" th:classappend="${active == 's10'} ? 'active' : ''" href="s10.html"><span class="code">S10</span> 문서함</a>
+    <a class="nav-item" th:classappend="${active == 's11'} ? 'active' : ''" href="s11.html"><span class="code">S11</span> 버전·개정이력</a>
+    <a class="nav-item" th:classappend="${active == 's12'} ? 'active' : ''" href="s12.html"><span class="code">S12</span> 문서 통합검색</a>
+    <a class="nav-item" th:classappend="${active == 's13'} ? 'active' : ''" href="s13.html"><span class="code">S13</span> 폴더·파일 권한</a>
+    <a class="nav-item" th:classappend="${active == 's15'} ? 'active' : ''" href="s15.html"><span class="code">S15</span> 체크리스트-문서 연결</a>
+    <a class="nav-item" th:classappend="${active == 's29'} ? 'active' : ''" href="s29.html"><span class="code">S29</span> 모바일 촬영·업로드</a>
+    <div class="nav-group-label">일정관리</div>
+    <a class="nav-item" th:classappend="${active == 's16'} ? 'active' : ''" href="s16.html"><span class="code">S16</span> WBS 템플릿 관리</a>
+    <a class="nav-item" th:classappend="${active == 's17'} ? 'active' : ''" href="s17.html"><span class="code">S17</span> 마일스톤 등록·조회</a>
+    <a class="nav-item" th:classappend="${active == 's18'} ? 'active' : ''" href="s18.html"><span class="code">S18</span> 태스크 관리(간트)</a>
+    <a class="nav-item" th:classappend="${active == 's19'} ? 'active' : ''" href="s19.html"><span class="code">S19</span> Excel 이관 도구</a>
+    <a class="nav-item" th:classappend="${active == 's20'} ? 'active' : ''" href="s20.html"><span class="code">S20</span> 태스크 상태 갱신</a>
+    <a class="nav-item" th:classappend="${active == 's21'} ? 'active' : ''" href="s21.html"><span class="code">S21</span> 프로젝트 등록</a>
+    <div class="nav-group-label">대시보드</div>
+    <a class="nav-item" th:classappend="${active == 's22'} ? 'active' : ''" href="s22.html"><span class="code">S22</span> 자산현황 위젯</a>
+    <a class="nav-item" th:classappend="${active == 's23'} ? 'active' : ''" href="s23.html"><span class="code">S23</span> 일정현황 위젯</a>
+    <a class="nav-item" th:classappend="${active == 's24'} ? 'active' : ''" href="s24.html"><span class="code">S24</span> 3D 뷰어</a>
+    <a class="nav-item" th:classappend="${active == 's25'} ? 'active' : ''" href="s25.html"><span class="code">S25</span> 안전관리 위젯</a>
+    <a class="nav-item" th:classappend="${active == 's26'} ? 'active' : ''" href="s26.html"><span class="code">S26</span> 센서 실시간 값</a>
+    <a class="nav-item" th:classappend="${active == 's27'} ? 'active' : ''" href="s27.html"><span class="code">S27</span> 통합 대시보드</a>
+    <div class="nav-group-label">실시간수집</div>
+    <a class="nav-item" th:classappend="${active == 's28'} ? 'active' : ''" href="s28.html"><span class="code">S28</span> MQTT 연결 상태</a>
+</nav>
+
+</body>
+</html>

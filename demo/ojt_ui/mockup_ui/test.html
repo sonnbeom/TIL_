@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>S01 · 자산 기준정보 관리 — DK엠텍 AAS</title>
+    <link rel="stylesheet" href="../assets/fonts.css" />
+    <link rel="stylesheet" href="../assets/app.css" />
+</head>
+<body>
+
+<div class="app">
+    <nav class="sidebar">
+        <div class="brand">
+            <div class="name">DK엠텍 AAS</div>
+            <div class="sub">제조 디지털트윈 · 자산관리</div>
+        </div>
+        <div class="nav-group-label">자산관리</div>
+        <a class="nav-item active" href="s01.html"><span class="code">S01</span> 자산 기준정보 관리</a>
+        <a class="nav-item" href="s02.html"><span class="code">S02</span> AAS 템플릿 관리</a>
+        <a class="nav-item" href="s03.html"><span class="code">S03</span> 선급 검사기준 관리</a>
+        <a class="nav-item" href="s04.html"><span class="code">S04</span> 자산 분류 탐색</a>
+        <a class="nav-item" href="s05.html"><span class="code">S05</span> 자산 검색</a>
+        <a class="nav-item" href="s06.html"><span class="code">S06</span> 자산 등록·수정</a>
+        <a class="nav-item" href="s07.html"><span class="code">S07</span> 자산 상세조회</a>
+        <a class="nav-item" href="s08.html"><span class="code">S08</span> 제조자원 자산 관리</a>
+        <a class="nav-item" href="s09.html"><span class="code">S09</span> 기자재 자산 관리</a>
+        <div class="nav-group-label">문서관리</div>
+        <a class="nav-item" href="s10.html"><span class="code">S10</span> 문서함</a>
+        <a class="nav-item" href="s11.html"><span class="code">S11</span> 버전·개정이력</a>
+        <a class="nav-item" href="s12.html"><span class="code">S12</span> 문서 통합검색</a>
+        <a class="nav-item" href="s13.html"><span class="code">S13</span> 폴더·파일 권한</a>
+        <a class="nav-item" href="s15.html"><span class="code">S15</span> 체크리스트-문서 연결</a>
+        <a class="nav-item" href="s29.html"><span class="code">S29</span> 모바일 촬영·업로드</a>
+        <div class="nav-group-label">일정관리</div>
+        <a class="nav-item" href="s16.html"><span class="code">S16</span> WBS 템플릿 관리</a>
+        <a class="nav-item" href="s17.html"><span class="code">S17</span> 마일스톤 등록·조회</a>
+        <a class="nav-item" href="s18.html"><span class="code">S18</span> 태스크 관리(간트)</a>
+        <a class="nav-item" href="s19.html"><span class="code">S19</span> Excel 이관 도구</a>
+        <a class="nav-item" href="s20.html"><span class="code">S20</span> 태스크 상태 갱신</a>
+        <a class="nav-item" href="s21.html"><span class="code">S21</span> 프로젝트 등록</a>
+        <div class="nav-group-label">대시보드</div>
+        <a class="nav-item" href="s22.html"><span class="code">S22</span> 자산현황 위젯</a>
+        <a class="nav-item" href="s23.html"><span class="code">S23</span> 일정현황 위젯</a>
+        <a class="nav-item" href="s24.html"><span class="code">S24</span> 3D 뷰어</a>
+        <a class="nav-item" href="s25.html"><span class="code">S25</span> 안전관리 위젯</a>
+        <a class="nav-item" href="s26.html"><span class="code">S26</span> 센서 실시간 값</a>
+        <a class="nav-item" href="s27.html"><span class="code">S27</span> 통합 대시보드</a>
+        <div class="nav-group-label">실시간수집</div>
+        <a class="nav-item" href="s28.html"><span class="code">S28</span> MQTT 연결 상태</a>
+    </nav>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="crumb">자산관리 · 전역 코드값</div>
+                <h1>자산 기준정보 관리</h1>
+            </div>
+            <div class="topbar-right">
+                <button class="btn primary" onclick="s01OpenGroupForm()">＋ 코드 그룹 추가</button>
+            </div>
+        </div>
+
+        <div class="split">
+            <aside class="split-pane">
+                <div class="split-pane-head"><span class="title">코드 그룹</span><span class="progress-label" id="s01-group-count">11개</span></div>
+                <div class="split-pane-body" id="s01-group-list"></div>
+            </aside>
+
+            <section class="split-detail" id="s01-detail"></section>
+        </div>
+    </div>
+</div>
+
+<button class="theme-toggle" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')">테마 전환</button>
+
+<script src="../assets/master-data.js"></script>
+<script>
+    var s01Groups = [
+        "order_type", "regulatory_body", "classification_society", "applicable_rule",
+        "vessel_category", "hull_material", "size_class",
+        "flag", "port", "voyage", "fb_type"
+    ];
+    var s01Impact = {
+        regulatory_body: '이 값은 <a href="s03.html">S03 선급 검사기준 관리</a>의 검사기준 필터 1단계 선택지로 그대로 사용됩니다',
+        classification_society: '이 값은 <a href="s03.html">S03 선급 검사기준 관리</a>의 검사기준 필터 선택지로 사용됩니다',
+        applicable_rule: '이 값은 <a href="s03.html">S03 선급 검사기준 관리</a>의 검사기준 필터 선택지로 사용됩니다',
+        vessel_category: '이 값은 <a href="s06.html">S06</a> 기술사양의 선종(VesselCategory) 드롭다운과 <a href="s03.html">S03</a> 검사기준 필터에 사용됩니다',
+        hull_material: '이 값은 <a href="s06.html">S06</a> 기술사양의 재질(HullMaterial) 드롭다운과 <a href="s03.html">S03</a> 검사기준 필터에 사용됩니다',
+        size_class: '이 값은 총톤수(GTT) 기준 자동계산 결과로 <a href="s06.html">S06</a>/<a href="s07.html">S07</a>에 표시됩니다',
+        flag: '호선 기술사양(<a href="s06.html">S06</a>/<a href="s07.html">S07</a>)의 국적 필드가 이 코드 목록을 검색·참조합니다',
+        port: '호선 기술사양(<a href="s06.html">S06</a>/<a href="s07.html">S07</a>)의 선적항 필드가 이 코드 목록을 검색·참조합니다',
+        voyage: '호선 기술사양(<a href="s06.html">S06</a>/<a href="s07.html">S07</a>)의 항행구역 필드가 이 코드 목록을 참조합니다',
+        fb_type: '건현(적재한도) 판정 시 참조되는 코드값입니다 — 선종(VesselCategory)과는 다른 축임에 유의'
+    };
+
+    function s01Render() {
+        var listEl = document.getElementById('s01-group-list');
+        var countEl = document.getElementById('s01-group-count');
+        countEl.textContent = s01Groups.length + '개';
+        listEl.innerHTML = s01Groups.map(function (key) {
+            var g = MASTER_DATA[key];
+            var count = g.fullCount ? g.fullCount.toLocaleString() : g.rows.length;
+            var selected = key === s01Current ? ' selected' : '';
+            return '<div class="tree-node leaf"><div class="tree-row' + selected + '" onclick="s01Select(\'' + key + '\')">' +
+                '<span class="tree-toggle"></span><span class="tree-label">' + g.label + '</span>' +
+                '<span class="tree-count">' + count + '</span></div></div>';
+        }).join('');
+
+        var g = MASTER_DATA[s01Current];
+        var detailEl = document.getElementById('s01-detail');
+        var html = '';
+
+        html += '<div class="combo-bar" style="margin-bottom:20px;">' +
+            '<div class="combo-title"><span class="path">' + g.label.replace(/\s*\(.*\)$/, '') + '</span>' +
+            '<span class="badge version">' + (g.editable ? 'Enum' : (g.label.indexOf('UN/LOCODE') > -1 ? 'UN/LOCODE' : 'ISO 3166-1')) + '</span></div>' +
+            '<div class="impact-note"><svg class="icon-svg" width="13" height="13" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3z"/></svg>' +
+            (s01Impact[s01Current] || '') + '</div></div>';
+
+        if (!g.editable) {
+            html += '<div class="field-note" style="margin-bottom:14px;">' +
+                '<svg class="ico icon-svg" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></svg>' +
+                '<span>' + g.readonlyNote + '</span></div>' +
+                '<div class="field full" style="margin-bottom:14px;"><label>코드 검색</label>' +
+                '<input type="text" id="s01-search" oninput="s01Filter()" placeholder="코드 또는 표시명으로 검색(대표 ' + g.rows.length + '개 항목 내 검색, 전체 ' + g.fullCount.toLocaleString() + '개 중 일부)" /></div>';
+        }
+
+        html += '<div class="doc-table" style="margin-bottom:18px;"><div class="overflow-x"><table>' +
+            '<thead><tr><th style="width:36px;">#</th>' + g.columns.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th></th></tr></thead>' +
+            '<tbody id="s01-rows">' + s01RenderRows(g) + '</tbody>' +
+            '</table></div></div>';
+
+        if (g.editable) {
+            html += '<button class="btn" style="margin-bottom:24px;" onclick="s01OpenValueForm()">＋ 값 추가</button>';
+        }
+
+        html += '<div class="field-note">' +
+            '<svg class="ico icon-svg" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></svg>' +
+            '<span>이 화면은 시스템 전역에서 참조되는 코드성 마스터 값만 관리합니다. 자산 분류(Facility/Equipment 등)와 그 속성 필드는 <a href="s02.html" style="color:var(--accent); font-weight:600; text-decoration:none;">S02 AAS 템플릿 관리</a>에서 다룹니다 — Type 정의와 개념적으로 같은 축이기 때문입니다.</span></div>';
+
+        html += '<div id="s01-form-slot"></div>';
+
+        detailEl.innerHTML = html;
+    }
+
+    function s01RenderRows(g) {
+        return g.rows.map(function (row, i) {
+            var cells = row.map(function (v) { return '<td>' + v + '</td>'; }).join('');
+            var action = g.editable
+                ? '<button class="btn" style="padding:5px 10px; font-size:12px;" onclick="s01RemoveRow(' + i + ')">삭제</button>'
+                : '<button class="btn" style="padding:5px 10px; font-size:12px;" disabled>조회전용</button>';
+            return '<tr data-search="' + row.join(' ').toLowerCase() + '"><td class="doc-idx">' + (i + 1) + '</td>' + cells + '<td>' + action + '</td></tr>';
+        }).join('');
+    }
+
+    function s01Select(key) {
+        s01Current = key;
+        s01Render();
+    }
+
+    function s01Filter() {
+        var q = document.getElementById('s01-search').value.trim().toLowerCase();
+        document.querySelectorAll('#s01-rows tr').forEach(function (tr) {
+            tr.style.display = tr.getAttribute('data-search').indexOf(q) > -1 ? '' : 'none';
+        });
+    }
+
+    function s01RemoveRow(i) {
+        var g = MASTER_DATA[s01Current];
+        if (!confirm('"' + g.rows[i][1] + '" 값을 삭제하시겠습니까? 이 값을 참조 중인 다른 화면(호선 기술사양 등)에 영향을 줄 수 있습니다.')) return;
+        g.rows.splice(i, 1);
+        s01Render();
+    }
+
+    function s01OpenValueForm() {
+        var g = MASTER_DATA[s01Current];
+        var slot = document.getElementById('s01-form-slot');
+        slot.innerHTML = '<div class="form-section" style="margin-top:14px;" open><div class="form-body">' +
+            '<div class="field-grid">' +
+            g.columns.map(function (c, i) {
+                return '<div class="field"><label>' + c + '</label><input type="text" id="s01-new-' + i + '" /></div>';
+            }).join('') +
+            '</div><div style="margin-top:12px; display:flex; gap:8px;">' +
+            '<button class="btn primary" onclick="s01AddValue()">저장</button>' +
+            '<button class="btn" onclick="document.getElementById(\'s01-form-slot\').innerHTML=\'\'">취소</button>' +
+            '</div></div></div>';
+    }
+
+    function s01AddValue() {
+        var g = MASTER_DATA[s01Current];
+        var row = g.columns.map(function (c, i) {
+            return document.getElementById('s01-new-' + i).value.trim();
+        });
+        if (!row[0]) { alert('코드값을 입력해 주세요.'); return; }
+        g.rows.push(row);
+        document.getElementById('s01-form-slot').innerHTML = '';
+        s01Render();
+    }
+
+    function s01OpenGroupForm() {
+        var slot = document.getElementById('s01-detail');
+        var existing = document.getElementById('s01-new-group-panel');
+        if (existing) { existing.remove(); return; }
+        var panel = document.createElement('div');
+        panel.id = 's01-new-group-panel';
+        panel.className = 'form-section';
+        panel.style.marginBottom = '18px';
+        panel.setAttribute('open', '');
+        panel.innerHTML = '<div class="form-body"><div class="field-grid">' +
+            '<div class="field"><label>그룹 키 (영문, 시스템용)</label><input type="text" id="s01-ng-key" placeholder="예: cargo_type" /></div>' +
+            '<div class="field"><label>그룹명 (표시용)</label><input type="text" id="s01-ng-label" placeholder="예: 화물유형" /></div>' +
+            '</div><div style="margin-top:12px; display:flex; gap:8px;">' +
+            '<button class="btn primary" onclick="s01AddGroup()">그룹 생성</button>' +
+            '<button class="btn" onclick="document.getElementById(\'s01-new-group-panel\').remove()">취소</button>' +
+            '</div></div>';
+        slot.prepend(panel);
+    }
+
+    function s01AddGroup() {
+        var key = document.getElementById('s01-ng-key').value.trim();
+        var label = document.getElementById('s01-ng-label').value.trim();
+        if (!key || !label) { alert('그룹 키와 그룹명을 모두 입력해 주세요.'); return; }
+        if (MASTER_DATA[key]) { alert('이미 존재하는 그룹 키입니다.'); return; }
+        MASTER_DATA[key] = { label: label, editable: true, columns: ["코드값", "표시명", "비고"], rows: [] };
+        s01Groups.push(key);
+        s01Current = key;
+        s01Render();
+    }
+
+    var s01Current = 'port';
+    s01Render();
+</script>
+</body>
+</html>

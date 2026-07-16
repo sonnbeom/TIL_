@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>S02 · AAS 템플릿 관리 — DK엠텍 AAS</title>
+    <link rel="stylesheet" th:href="@{/resources/css/fonts.css}" />
+    <link rel="stylesheet" th:href="@{/resources/css/app.css}" />
+</head>
+<body>
+
+<div class="app">
+    <nav th:replace="~{fragments/layout :: sidebar(active='s02')}"></nav>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="crumb">자산관리 · 분류·Type 정의</div>
+                <h1>AAS 템플릿 관리</h1>
+            </div>
+            <div class="topbar-right">
+                <button class="btn">＋ 분류 추가</button>
+                <button class="btn primary">＋ Type 생성</button>
+            </div>
+        </div>
+
+        <div class="split">
+            <aside class="split-pane">
+                <div class="split-pane-head">
+                    <span class="title">분류 · Type 목록</span>
+                    <span class="progress-label" th:text="${nodeCount} + '개 노드'">14개 노드</span>
+                </div>
+                <div class="split-pane-body">
+                    <div class="tree-node open" th:each="groupKey : ${groupOrder}" th:with="group=${tree.get(groupKey)}">
+                        <a class="tree-row" th:classappend="${groupKey == selectedKey} ? 'selected' : ''"
+                           th:href="@{/s02(node=${groupKey})}">
+                            <span class="tree-toggle"><svg width="10" height="10" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg></span>
+                            <svg class="tree-icon icon-svg" width="14" height="14" viewBox="0 0 24 24" th:utext="${icons.get(group.icon)}"></svg>
+                            <span class="tree-label" th:text="${group.label}">분류명</span>
+                            <span class="tree-count" th:text="${group.children.size()}">0</span>
+                        </a>
+                        <div class="tree-children">
+                            <div class="tree-node leaf" th:each="childKey : ${group.children}" th:with="child=${tree.get(childKey)}">
+                                <a class="tree-row" th:classappend="${childKey == selectedKey} ? 'selected' : ''"
+                                   th:href="@{/s02(node=${childKey})}">
+                                    <span class="tree-toggle"></span>
+                                    <span class="badge version" style="margin-right:6px;" th:if="${child.isType()}">Type</span>
+                                    <span class="tree-label" th:text="${child.label}">항목명</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="split-detail" th:if="${selectedNode != null}">
+
+                <div th:if="${selectedNode.isGroup()}">
+                    <div class="combo-bar" style="margin-bottom:20px;">
+                        <div class="combo-title">
+                            <span class="path" th:text="${selectedNode.label}">분류명</span>
+                            <span class="badge version">분류</span>
+                        </div>
+                    </div>
+                    <div class="field-note">
+                        <svg class="ico icon-svg" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></svg>
+                        <span>좌측에서 이 분류 하위의 Type 또는 Instance를 선택하면 상세 정보가 표시됩니다. 이 분류 아래에 새 Type을 만들려면 상단 "＋ Type 생성" 버튼을 사용하세요.</span>
+                    </div>
+                </div>
+
+                <div th:if="${selectedNode.isType()}">
+                    <div class="combo-bar" style="margin-bottom:20px;">
+                        <div class="combo-title">
+                            <span class="path" th:text="${tree.get(selectedNode.parent).shortLabel} + ' › ' + ${selectedNode.label}">분류 › Type명</span>
+                            <span class="badge version">Type 정의</span>
+                        </div>
+                        <div class="impact-note">이 Type에서 생성된 Instance
+                            <a href="s04.html"><span class="impact-count" th:text="${selectedNode.instanceCount} + '건'">0건</span> 보기</a>
+                        </div>
+                    </div>
+
+                    <div class="tabs" style="margin-bottom:18px;">
+                        <a class="tab" th:classappend="${tab == 'fields'} ? 'active' : ''"
+                           th:href="@{/s02(node=${selectedKey}, tab='fields')}" style="cursor:pointer;">속성 필드</a>
+                        <a class="tab" th:classappend="${tab == 'submodel'} ? 'active' : ''"
+                           th:href="@{/s02(node=${selectedKey}, tab='submodel')}" style="cursor:pointer;">Submodel Template</a>
+                    </div>
+
+                    <div th:if="${tab == 'fields'}" class="form-section" style="box-shadow:none;">
+                        <div class="form-body" style="border-top:none; padding-top:4px;">
+                            <div class="attr-field-row" style="font-size:11px; font-weight:700; color:var(--ink-3); text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid var(--border);">
+                                <span>필드명</span><span>타입</span><span>필수</span><span></span>
+                            </div>
+
+                            <th:block th:each="fg : ${selectedNode.fields}">
+                                <details class="attr-collapsible" style="margin-top:14px;" th:if="${fg.collapsedByDefault}">
+                                    <summary style="cursor:pointer; font-size:12px; color:var(--ink-3); font-weight:600;">
+                                        <th:block th:text="${fg.cat}">카테고리</th:block>
+                                        <span class="submodel-badge" th:if="${fg.submodelId != null}" th:text="${submodelById.get(fg.submodelId).label}"></span>
+                                        <span class="unit-badge" style="margin-left:6px;" th:if="${fg.unit != null}" th:text="${fg.unit}"></span>
+                                        <span style="color:var(--ink-3); font-weight:400;">(기본 접힘)</span>
+                                    </summary>
+                                    <div style="margin-top:8px;">
+                                        <div class="attr-field-row" th:each="row : ${fg.rows}">
+                                            <input type="text" th:value="${row.name}" />
+                                            <select><option th:text="${row.type}">타입</option></select>
+                                            <label class="check-item" style="font-size:12px;"><input type="checkbox" th:checked="${row.required}" /></label>
+                                            <button class="attr-remove" title="삭제"><svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+                                        </div>
+                                    </div>
+                                </details>
+
+                                <th:block th:unless="${fg.collapsedByDefault}">
+                                    <div class="attr-category">
+                                        <th:block th:text="${fg.cat}">카테고리</th:block>
+                                        <span class="submodel-badge" th:if="${fg.submodelId != null}" th:text="${submodelById.get(fg.submodelId).label}"></span>
+                                        <span class="unit-badge" style="margin-left:6px;" th:if="${fg.unit != null}" th:text="${fg.unit}"></span>
+                                    </div>
+                                    <div class="attr-field-row" th:each="row : ${fg.rows}">
+                                        <input type="text" th:value="${row.name}" />
+                                        <select><option th:text="${row.type}">타입</option></select>
+                                        <label class="check-item" style="font-size:12px;"><input type="checkbox" th:checked="${row.required}" /></label>
+                                        <button class="attr-remove" title="삭제"><svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+                                    </div>
+                                </th:block>
+                            </th:block>
+
+                            <button class="btn" style="margin-top:12px; font-size:12.5px;">＋ 필드 추가</button>
+                        </div>
+                    </div>
+
+                    <div th:if="${tab == 'submodel'}">
+                        <div class="field-note" style="margin-bottom:14px;">
+                            <svg class="ico icon-svg" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></svg>
+                            <span>이 Type의 Instance가 생성될 때 함께 인스턴스화되는 Submodel Template 목록입니다. IDTA 표준 템플릿과 자체 확장 템플릿을 함께 관리합니다.</span>
+                        </div>
+
+                        <div class="doc-table" style="margin-bottom:18px;">
+                            <div class="overflow-x">
+                                <table>
+                                    <thead><tr><th style="width:36px;">#</th><th>Submodel</th><th>표준</th><th>설명</th><th></th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="smId, status : ${selectedNode.submodels}" th:with="sm=${submodelById.get(smId)}">
+                                        <td class="doc-idx" th:text="${status.index + 1}">1</td>
+                                        <td class="doc-name" th:text="${sm.label}">Submodel</td>
+                                        <td class="ci-sub" th:text="${sm.std}">표준</td>
+                                        <td class="ci-sub" th:text="${sm.desc}">설명</td>
+                                        <td><button class="btn" style="padding:5px 10px; font-size:12px;">제거</button></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <th:block th:if="${!availableSubmodels.isEmpty()}">
+                            <div class="field full" style="margin-bottom:10px;">
+                                <label>Submodel Template 추가</label>
+                                <select>
+                                    <option th:each="sm : ${availableSubmodels}" th:value="${sm.id}" th:text="${sm.label} + ' (' + ${sm.std} + ')'">Submodel</option>
+                                </select>
+                            </div>
+                            <button class="btn">＋ Submodel 추가</button>
+                        </th:block>
+                        <div class="field-note" th:if="${availableSubmodels.isEmpty()}">모든 카탈로그 항목이 이미 연결되어 있습니다.</div>
+                    </div>
+
+                    <div class="checklist-version-bar" style="margin-top:20px; margin-bottom:0;">
+                        <div class="cvb-left">
+                            <span class="label">이 Type으로 Instance 만들기</span>
+                            <span class="ver">현재 속성 필드와 연결된 Submodel Template의 값을 그대로 복제해 신규 자산을 생성합니다</span>
+                        </div>
+                        <button class="btn primary">＋ Instance 생성</button>
+                    </div>
+
+                    <div class="field-note" style="margin-top:14px;">
+                        <svg class="ico icon-svg" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></svg>
+                        <span><b style="color:var(--ink);">여기서 정의한 필드는 이 분류에 속한 모든 Instance의 TechnicalData Submodel에 공통 슬롯으로 생성됩니다.</b> 이미 등록된 자산이 있는 분류는 필드 삭제 시 기존 값이 함께 사라지므로 삭제 확인 절차를 거치며, "Instance 생성" 이후의 정의 변경은 기존 Instance에 자동 반영되지 않습니다.</span>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </div>
+</div>
+
+<button class="theme-toggle" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')">테마 전환</button>
+
+</body>
+</html>

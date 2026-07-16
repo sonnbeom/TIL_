@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>S01 · 자산 기준정보 관리 — DK엠텍 AAS</title>
+    <link rel="stylesheet" th:href="@{/resources/css/fonts.css}" />
+    <link rel="stylesheet" th:href="@{/resources/css/app.css}" />
+</head>
+<body>
+
+<div class="app">
+    <nav th:replace="~{fragments/layout :: sidebar(active='s01')}"></nav>
+
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="crumb">자산관리 · 전역 코드값</div>
+                <h1>자산 기준정보 관리</h1>
+            </div>
+            <div class="topbar-right">
+                <button class="btn primary">＋ 코드 그룹 추가</button>
+            </div>
+        </div>
+
+        <div class="split">
+            <aside class="split-pane">
+                <div class="split-pane-head">
+                    <span class="title">코드 그룹</span>
+                    <span class="progress-label" th:text="${groups.size()} + '개'">11개</span>
+                </div>
+                <div class="split-pane-body">
+                    <div class="tree-node leaf" th:each="entry : ${groups}">
+                        <a class="tree-row" th:classappend="${entry.key == selectedKey} ? 'selected' : ''"
+                           th:href="@{/s01(group=${entry.key})}">
+                            <span class="tree-toggle"></span>
+                            <span class="tree-label" th:text="${entry.value.label}">그룹명</span>
+                            <span class="tree-count" th:text="${#numbers.formatInteger(entry.value.count, 0, 'COMMA')}">0</span>
+                        </a>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="split-detail" th:if="${selectedGroup != null}">
+                <div class="combo-bar" style="margin-bottom:20px;">
+                    <div class="combo-title">
+                        <span class="path" th:text="${selectedGroup.shortLabel}">그룹명</span>
+                        <span class="badge version" th:text="${selectedGroup.badge}">Enum</span>
+                    </div>
+                    <div class="impact-note" th:if="${impactNote != null}">
+                        <svg class="icon-svg" width="13" height="13" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3z"/></svg>
+                        <span th:utext="${impactNote}"></span>
+                    </div>
+                </div>
+
+                <th:block th:unless="${selectedGroup.editable}">
+                    <div class="field-note" style="margin-bottom:14px;">
+                        <svg class="ico icon-svg" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></svg>
+                        <span th:text="${selectedGroup.readonlyNote}"></span>
+                    </div>
+                    <div class="field full" style="margin-bottom:14px;">
+                        <label>코드 검색</label>
+                        <input type="text" id="s01-search" oninput="s01Filter()"
+                               th:placeholder="'코드 또는 표시명으로 검색(대표 ' + ${selectedGroup.rows.size()} + '개 항목 내 검색, 전체 ' + ${#numbers.formatInteger(selectedGroup.fullCount, 0, 'COMMA')} + '개 중 일부)'" />
+                    </div>
+                </th:block>
+
+                <div class="doc-table" style="margin-bottom:18px;">
+                    <div class="overflow-x">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th style="width:36px;">#</th>
+                                <th th:each="c : ${selectedGroup.columns}" th:text="${c}">컬럼</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="s01-rows">
+                            <tr th:each="row, status : ${selectedGroup.rows}" th:attr="data-search=${row.searchKey}">
+                                <td class="doc-idx" th:text="${status.index + 1}">1</td>
+                                <td th:each="cell : ${row.cells}" th:text="${cell}">값</td>
+                                <td>
+                                    <button class="btn" style="padding:5px 10px; font-size:12px;" th:if="${selectedGroup.editable}">삭제</button>
+                                    <button class="btn" style="padding:5px 10px; font-size:12px;" disabled th:unless="${selectedGroup.editable}">조회전용</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <button class="btn" style="margin-bottom:24px;" th:if="${selectedGroup.editable}">＋ 값 추가</button>
+
+                <div class="field-note">
+                    <svg class="ico icon-svg" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></svg>
+                    <span>이 화면은 시스템 전역에서 참조되는 코드성 마스터 값만 관리합니다. 자산 분류(Facility/Equipment 등)와 그 속성 필드는
+                        <a href="s02.html" style="color:var(--accent); font-weight:600; text-decoration:none;">S02 AAS 템플릿 관리</a>에서 다룹니다 —
+                        Type 정의와 개념적으로 같은 축이기 때문입니다.</span>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<button class="theme-toggle" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')">테마 전환</button>
+
+<script>
+    function s01Filter() {
+        var q = document.getElementById('s01-search').value.trim().toLowerCase();
+        document.querySelectorAll('#s01-rows tr').forEach(function (tr) {
+            tr.style.display = tr.getAttribute('data-search').indexOf(q) > -1 ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>
